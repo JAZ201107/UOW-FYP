@@ -1,0 +1,12 @@
+names:
+- Maize
+nc: 1
+roboflow:
+  license: CC BY 4.0
+  project: maize_predict
+  url: https://universe.roboflow.com/project/maize_predict/dataset/3
+  version: 3
+  workspace: project
+test: ../test/images
+train: Maize_Predict-3/train/images
+val: Maize_Predict-3/valid/images

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile</title>
+</head>
+<body>
+<img id="user_image"
+     src="https://learn-aws-1211.s3.ap-southeast-1.amazonaws.com/images/user_profile_images/default.png">
+<input type="text" id="user_name">
+<input type="email" id="user_email">
+<input type="number" id="user_phone_number">
+<button onabort="updateProfile(event)">Update</button>
+
+
+</body>
+
+<script>
+    const userProfileEndPoint = "http://localhost:8000/api/users/info"
+    const user_name = document.querySelector('#user_name')
+    const user_email = document.querySelector('#user_email')
+    const user_image = document.querySelector('#user_image')
+    const user_phone_number = document.querySelector('#user_phone_number')
+
+    loadInfo()
+
+    const loadInfo = async () => {
+        let formData = new FormData()
+        formData.append('user_email', user_email)
+        formData.append('user_name', user_name)
+        formData.append('user_image', user_image.src)
+        formData.append('user_phone_number', user_phone_number)
+
+        let data = await fetch(userProfileEndPoint, {
+            method: 'GET',
+            body: formData
+        }).then(response => response.json())
+            .then(
+                data => {
+                    return data;
+                }
+            )
+            .catch(error => {
+                console.error(error)
+            })
+
+        user_image.src = data.user_image
+
+    }
+
+    const updateProfile = async (event) => {
+        let formData = new FormData()
+        formData.append('user_email', user_email)
+        formData.append('user_name', user_name)
+        formData.append('user_image', user_image.src)
+        formData.append('user_phone_number', user_phone_number)
+
+        let data = await fetch(userProfileEndPoint, {
+            method: 'GET',
+            body: formData
+        }).then(response => response.json())
+            .then(
+                data => {
+                    return data;
+                }
+            )
+            .catch(error => {
+                console.error(error)
+            })
+
+    }
+</script>
+</html>

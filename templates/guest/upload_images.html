@@ -1,0 +1,122 @@
+{% block stylesheets %}{% endblock stylesheets %}
+{% block content %}
+    <div id="app" v-loading="loading"
+         element-loading-text="Processing..."
+         element-loading-spinner="el-icon-loading"
+         element-loading-background="rgba(0, 0, 0, 0.8)">
+        <p id="user_email_h" hidden>{{ user_email }}</p>
+        <h2>Image Upload and Process</h2>
+        <h3>How to use?</h3>
+        <p>Click choose file button, then click process to process the image</p>
+        <p>The processed images will display below</p>
+        <input type="file" accept="image/*" id="imageInput" @change="uploadFile" ref="file">
+        <button @click="submitFile">Submit</button>
+        <template>
+            <el-table
+                    :data="tableData"
+                    stripe
+            >
+                <el-table-column
+                        label="Origin"
+                        prop="image_detected_url_return"
+                >
+                    <template slot-scope="scope">
+                        <el-image
+
+                                style="width: 100px; height: 100px"
+                                :src="scope.row.image_url"/>
+                    </template>
+                </el-table-column>
+
+                <el-table-column
+                        label="Detected"
+                        prop="image_url"
+                >
+                    <template slot-scope="scope">
+                        <el-image
+                                style="width: 100px; height: 100px"
+                                :src="scope.row.image_detected_url_return"/>
+                    </template>
+
+                </el-table-column>
+
+                <el-table-column
+                        label="Count"
+                        prop="counted"
+                >
+
+
+                </el-table-column>
+                <el-table-column
+                        label="Download">
+                    <template slot-scope="scope">
+                        <a target="_blank" :href="scope.row.image_detected_url_return" download="">
+                            <el-button type="primary" round>
+                                Download
+                            </el-button>
+                        </a>
+                        <a href="#" @onclick="forceDown(scope.row.image_detected_url_return, 'image.jpeg')" download="">
+                            <el-button type="primary" round>
+                                Download
+                            </el-button>
+                        </a>
+
+                    </template>
+                </el-table-column>
+
+            </el-table>
+        </template>
+    </div>
+{% endblock content %}
+
+<!-- Specific JS goes HERE -->
+{% block javascripts %}
+
+
+
+    <script src="/static/assets/js/vue.js"></script>
+    <script src="/static/assets/js/axios.min.js"></script>
+    <script src="/static/assets/element-ui/lib/index.js"></script>
+
+    <link rel="stylesheet" href="/static/assets/plugins/element-ui/index.css"/>
+    <link rel="stylesheet" href="/static/assets/styles/common.css"/>
+    <link rel="stylesheet" href="/static/assets/styles/icon/iconfont.css"/>
+
+    <script>
+        const imageEndpoint = 'http://localhost:8000/api/images/upload'
+        new Vue({
+            el: "#app",
+            data() {
+                return {
+                    tableData: [],
+                    loading: false
+                }
+            },
+            methods: {
+                uploadFile() {
+                    this.Images = this.$refs.file.files[0];
+                },
+                submitFile() {
+                    this.loading = true
+                    const formData = new FormData()
+                    formData.append("image", this.Images)
+                    formData.append("user_email", document.querySelector('#user_email_h').textContent)
+                    const headers = {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                    axios.post(
+                        imageEndpoint,
+                        formData,
+                        {headers})
+                        .then((res) => {
+                            console.log(res.data)
+                            this.tableData.push(res.data)
+                            this.loading = false
+                        }).catch((error) => {
+                        this.loading = false
+                    });
+                }
+            }
+        })
+    </script>
+{% endblock javascripts %}

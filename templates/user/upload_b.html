@@ -1,0 +1,185 @@
+{% extends 'layouts/base_user.html' %}
+
+{% block title %} Dashboard {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+
+{% block content %}
+
+    <div id="app">
+        <p id="user_email_h" hidden>{{ user_email }}</p>
+        <h2>Image Upload and Process</h2>
+        <h3>How to use?</h3>
+        <p>Click choose file button, then click process to process the image</p>
+        <p>The processed images will display below</p>
+        <input type="file" accept="image/*" id="imageInput">
+        <button onclick="createImage(event)">Submit</button>
+
+        <template>
+            <el-table
+                    :data="tableData"
+                    stripe
+            >
+                <el-table-column
+                        label="Origin"
+                        prop="image_detected_url_return"
+                >
+                    <template slot-scope="scope">
+                        <el-image
+
+                                style="width: 100px; height: 100px"
+                                :src="scope.row.image_detected_url_return"/>
+                    </template>
+                </el-table-column>
+
+                <el-table-column
+                        label="Detected"
+                        prop="image_url"
+                >
+                    <template slot-scope="scope">
+                        <el-image
+                                style="width: 100px; height: 100px"
+                                :src="scope.row.image_url"/>
+                    </template>
+
+                </el-table-column>
+
+                <el-table-column
+                        label="Count"
+                        prop="counted"
+                >
+
+
+                </el-table-column>
+                <el-table-column
+                        label="Download">
+                    <template slot-scope="scope">
+                        <a target="_blank" :href="scope.row.image_detected_url_return" download="">
+                            <el-button type="primary" round>
+                                Download
+                            </el-button>
+                        </a>
+                        <a href="#" @onclick="forceDown(scope.row.image_detected_url_return, 'image.jpeg')" download="">
+                            <el-button type="primary" round>
+                                Download
+                            </el-button>
+                        </a>
+
+                    </template>
+                </el-table-column>
+
+            </el-table>
+        </template>
+
+
+    </div>
+
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE -->
+{% block javascripts %}
+
+    <script src="/static/assets/js/plugins/chartjs.min.js"></script>
+    <script src="/static/assets/js/plugins/Chart.extension.js"></script>
+    <script src="/static/assets/js/vue.js"></script>
+    <script src="/static/assets/js/axios.min.js"></script>
+    <script src="/static/assets/element-ui/lib/index.js"></script>
+
+    <link rel="stylesheet" href="/static/assets/plugins/element-ui/index.css"/>
+    <link rel="stylesheet" href="/static/assets/styles/common.css"/>
+    <link rel="stylesheet" href="/static/assets/styles/icon/iconfont.css"/>
+
+    <script>
+        const imageEndpoint = 'http://localhost:8000/api/images/upload'
+        const oneImage = document.querySelector('#oneImage')
+
+        const imageInput = document.querySelector('#imageInput')
+        const user_email_h = document.querySelector('#user_email_h').textContent
+
+
+        const loadOneImage = (data) => {
+            let img = document.createElement('img')
+            img.src = data.image_detected_url_return
+            img.width = 300
+            oneImage.appendChild(img)
+        }
+
+
+        const createImage = async (event) => {
+            event.preventDefault()
+            let image = imageInput.files[0]
+            let formData = new FormData()
+
+            formData.append('image', image)
+            formData.append('user_email', user_email_h)
+
+            let data = await fetch(imageEndpoint, {
+                method: 'POST',
+                body: formData
+            }).then(response => response.json())
+                .then(data => {
+                    return data;
+                })
+                .catch(error => {
+                    console.error(error)
+                })
+            console.log(data)
+            loadOneImage(data)
+        }
+    </script>
+    <script>
+        new Vue({
+            el: "#app",
+            data() {
+                return {
+                    tableData: [{
+                        image_detected_url_return: "https://learn-aws-1211.s3.ap-southeast-1.amazonaws.com/images/test02.jpg",
+                        image_url: "https://learn-aws-1211.s3.ap-southeast-1.amazonaws.com/images/test02.jpg",
+                        counted: "2",
+                    }]
+                }
+            },
+
+            methods: {
+                forceDown(url, filename) {
+                    fetch(url).then(function (t) {
+                        return t.blob().then((b) => {
+                            var a = document.createElement("a");
+                            a.href = URL.createObjectURL(b);
+                            a.setAttribute("download", filename);
+                            a.click();
+                        });
+                    });
+                },
+
+                downloadImage(url) {
+                    console.log("Success Logged")
+                    console.log(url);
+                    axios({
+                        url: "https://learn-aws-1211.s3.ap-southeast-1.amazonaws.com/images/test02.jpg",
+                        method: "GET",
+                        responseType: "blob"
+                    }).then((response) => {
+                        const fileUrl = window.URL.createObjectURL(new Blob([response.data]))
+                        const fileLink = document.createElement('a')
+                        fileLink.href = fileUrl
+                        console.log("File Url")
+                        console.log(fileUrl)
+
+                        fileLink.setAttribute('download', 'image.jpeg')
+                        document.body.appendChild(fileLink)
+                        fileLink.click()
+                        fileLink.remove()
+                    }).catch(error => {
+                        console.log(error)
+                    })
+                }
+            }
+        })
+
+    </script>
+
+{% endblock javascripts %}
