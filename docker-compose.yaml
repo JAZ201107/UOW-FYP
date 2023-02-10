@@ -12,7 +12,8 @@ services:
       - fyp_db:/var/lib/mysql
 
   fyp_app:
-    image: fyp_app:1.1
+#    image: jinismygirl/fyp_app_deploy
+    image: jinismygirl/fyp_app_local
     ports:
       - 8000:8000
     volumes:
