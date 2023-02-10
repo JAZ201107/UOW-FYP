@@ -12,11 +12,14 @@ services:
       - fyp_db:/var/lib/mysql
 
   fyp_app:
-    image: fyp_app:1.0
+    image: fyp_app:1.1
     ports:
       - 8000:8000
+    volumes:
+      - ./Docker_Volumn:/home/uow_fyp
     command: >
-      sh -c "python manage.py makemigrations &&
+      sh -c "
+            python manage.py makemigrations &&
             python manage.py migrate &&
             python manage.py runserver 0.0.0.0:8000
             "
