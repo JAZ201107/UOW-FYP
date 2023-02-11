@@ -17,5 +17,9 @@ urlpatterns = [
     path("user/IoT", views.user_IoT, name="user_IoT"),
 
     # user upload image
-    path("user/upload", views.user_upload, name="user_upload")
+    path("user/upload", views.user_upload, name="user_upload"),
+
+    # For user camera
+    path("user/webcam", views.user_webcam, name="user_webcam"),
+    path("user/webcam_capture", views.user_webcam_capture, name="user_webcam_capture")
 ]

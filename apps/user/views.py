@@ -3,6 +3,8 @@ from .forms import CreateUserForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.http.response import StreamingHttpResponse
+from apps.user import camera
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 import requests
@@ -102,3 +104,21 @@ def user_upload(request):
             return render(request, "user/upload.html", {'user_email': user_email})
     logout(request)
     return redirect("user_login")
+
+
+def user_webcam(request):
+    return render(request, "user/video.html")
+
+
+def gen(camera):
+    """Helper function to user_webcam """
+    while True:
+        frame = camera.get_frame()
+        yield (b'--frame\r\n'
+               b'Content-Type:image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+
+
+def user_webcam_capture(request):
+    """This function return the real-time camera"""
+    return StreamingHttpResponse(gen(camera.Webcam()),
+                                 content_type='multipart/x-mixed-replace;boundary=frame')
