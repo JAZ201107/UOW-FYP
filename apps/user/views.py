@@ -122,3 +122,9 @@ def user_webcam_capture(request):
     """This function return the real-time camera"""
     return StreamingHttpResponse(gen(camera.Webcam()),
                                  content_type='multipart/x-mixed-replace;boundary=frame')
+
+def user_webcam_default(request):
+    """This function return the default video"""
+    return StreamingHttpResponse(gen(camera.DefaultVideo()),
+                                 content_type='multipart/x-mixed-replace;boundary=frame')
+

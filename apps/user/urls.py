@@ -21,5 +21,8 @@ urlpatterns = [
 
     # For user camera
     path("user/webcam", views.user_webcam, name="user_webcam"),
-    path("user/webcam_capture", views.user_webcam_capture, name="user_webcam_capture")
+    path("user/webcam_capture", views.user_webcam_capture, name="user_webcam_capture"),
+
+    # Display the Video For User
+    path("user/webcam_default", views.user_webcam_default, name="user_webcam_default"),
 ]

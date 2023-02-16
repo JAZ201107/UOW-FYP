@@ -157,3 +157,20 @@ class Webcam(object):
 
             ret, jpeg = cv2.imencode('.jpeg', img0)
             return jpeg.tobytes()
+
+
+class DefaultVideo(object):
+    def __init__(self):
+        video_path = "./static/example_video.mp4"
+        self.video = cv2.VideoCapture(video_path)
+
+    def __del__(self):
+        self.video.release()
+
+    def get_frame(self):
+        while True:
+            print("Process")
+            ret, img0 = self.video.read()
+            if ret:
+                _, jpeg = cv2.imencode('.jpeg', img0)
+                return jpeg.tobytes()
