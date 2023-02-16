@@ -111,6 +111,7 @@ class Webcam(object):
 
             # Read Image In
             ret, img0 = self.video_c.read()
+            img0 = cv2.flip(img0, 1)
             img = letterbox(img0, self.imgsz, stride=self.stride)[0]
             img = img[:, :, ::-1].transpose(2, 0, 1)  # BGR to RGB, to 3x416x416
             img = np.ascontiguousarray(img)
@@ -153,6 +154,6 @@ class Webcam(object):
                         label = f'{self.names[int(cls)]} {conf:.2f}'
                         plot_one_box(xyxy, img0, label=label, color=1,
                                      line_thickness=1)  # color=colors[int(c
-            image = cv2.flip(img0, 1)
-            ret, jpeg = cv2.imencode('.jpeg', image)
+
+            ret, jpeg = cv2.imencode('.jpeg', img0)
             return jpeg.tobytes()

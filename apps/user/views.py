@@ -90,7 +90,7 @@ def user_IoT(request):
         if request.user.is_admin:
             return redirect("sys_admin_home")
         else:
-            return render(request, "user/profile.html", {'user_email': user_email})
+            return render(request, "user/IoT.html", {'user_email': user_email})
     logout(request)
     return redirect("user_login")
 
